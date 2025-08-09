@@ -1,6 +1,31 @@
+import { useRef, useEffect } from 'react';
 import { Camera } from './SVGs/Camera'
+import Hls from 'hls.js';
 
 export const CameraContainer = () => {
+
+   const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    let hls;
+
+    // Ruta exacta donde tu servidor Node.js sirve los archivos HLS
+    const streamUrl = 'http://localhost:3002/stream/stream.m3u8';
+
+    if (Hls.isSupported()) {
+      hls = new Hls();
+      hls.loadSource(streamUrl);
+      hls.attachMedia(video);
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // Soporte nativo para Safari
+      video.src = streamUrl;
+    }
+
+    return () => {
+      if (hls) hls.destroy();
+    };
+  }, []);
 
   return (
     <div className="w-[70%] border-1 border-slate-300 p-[40px] rounded-xl">
@@ -11,7 +36,12 @@ export const CameraContainer = () => {
       </span>
       <p className=" pb-[30px] text-slate-500">Camara estacion X</p>
       <div className="rounded-xl overflow-hidden ">
-        <img src="https://static.nationalgeographic.es/files/styles/image_3200/public/nationalgeographic1099295.webp?w=1600&h=900" className="w-full"/>
+      <video
+        ref={videoRef}
+        controls
+        autoPlay
+        style={{ width: '100%', maxWidth: '800px' }}
+      />
       </div>
     </div>
   )
