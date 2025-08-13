@@ -1,0 +1,1 @@
+ffmpeg -rtsp_transport tcp -i "rtsp://tu_ip:puerto/ruta"  -c:v libx264 -preset ultrafast -tune zerolatency  -c:a aac -strict experimental -f hls -hls_time 2 -hls_list_size 3 -hls_flags delete_segments -hls_allow_cache 0 ./stream/stream.m3u8
